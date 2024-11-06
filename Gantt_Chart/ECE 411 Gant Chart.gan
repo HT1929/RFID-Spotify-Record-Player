@@ -1,9 +1,9 @@
-<?xml version="1.0" encoding="UTF-8"?><project name="ECE 411 -  RFID Spotify Record Player Project" company="" webLink="http://" view-date="2024-10-02" view-index="0" gantt-divider-location="379" resource-divider-location="300" version="3.3.3300" locale="en_US">
+<?xml version="1.0" encoding="UTF-8"?><project name="ECE 411 -  RFID Spotify Record Player Project" company="" webLink="http://" view-date="2024-10-02" view-index="0" gantt-divider-location="547" resource-divider-location="300" version="3.3.3300" locale="en_US">
     <description/>
-    <view zooming-state="default:2" id="gantt-chart">
-        <field id="tpd3" name="Name" width="215" order="0"/>
-        <field id="tpd4" name="Begin date" width="81" order="1"/>
-        <field id="tpd5" name="End date" width="82" order="2"/>
+    <view zooming-state="default:3" id="gantt-chart">
+        <field id="tpd3" name="Name" width="311" order="0"/>
+        <field id="tpd4" name="Begin date" width="117" order="1"/>
+        <field id="tpd5" name="End date" width="119" order="2"/>
         <field id="tpd15" name="Notes" width="20" order="3"/>
         <option id="filter.completedTasks" value="false"/>
         <option id="filter.dueTodayTasks" value="false"/>
@@ -88,7 +88,7 @@
             </task>
             <task id="19" uid="12b4ea6f1e7149559c33719d3562736a" name="Implement RFID Scanning" color="#3333ff" meeting="false" start="2024-10-29" duration="7" complete="0" thirdDate="2024-09-30" thirdDate-constraint="0" expand="true"/>
             <task id="20" uid="607c0a30fa80451f8fee09187735fd1e" name="Implement Spotify Playback Functionality" color="#3333ff" meeting="false" start="2024-10-29" duration="7" complete="0" thirdDate="2024-09-30" thirdDate-constraint="0" expand="true"/>
-            <task id="27" uid="d85e204ab3954b4d94c375b09eac77ba" name="LCD display and user interface coding" color="#3333ff" meeting="false" start="2024-10-29" duration="7" complete="0" thirdDate="2024-10-08" thirdDate-constraint="0" expand="true"/>
+            <task id="27" uid="d85e204ab3954b4d94c375b09eac77ba" name="LCD Display and User Interface Coding" color="#3333ff" meeting="false" start="2024-10-29" duration="7" complete="0" thirdDate="2024-10-08" thirdDate-constraint="0" expand="true"/>
             <task id="22" uid="d525668d87414f51b300b602e12cd23b" name="Integrate Component with Raspberry Pi" color="#3333ff" meeting="false" start="2024-10-29" duration="7" complete="0" thirdDate="2024-10-10" thirdDate-constraint="0" expand="true"/>
         </task>
         <task id="23" uid="815398ef011f44bbb09fcc7a1c8170f2" name="Testing" color="#cc00cc" meeting="false" start="2024-11-07" duration="12" complete="0" thirdDate="2024-10-10" thirdDate-constraint="0" expand="true">
