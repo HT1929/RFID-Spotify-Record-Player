@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?><project name="ECE 411 -  RFID Spotify Record Player Project" company="" webLink="http://" view-date="2024-10-01" view-index="0" gantt-divider-location="394" resource-divider-location="300" version="3.3.3300" locale="en_US">
+    <description/>
+    <view zooming-state="default:2" id="gantt-chart">
+        <field id="tpd3" name="Name" width="215" order="0"/>
+        <field id="tpd4" name="Begin date" width="81" order="1"/>
+        <field id="tpd5" name="End date" width="82" order="2"/>
+        <field id="tpd15" name="Notes" width="20" order="3"/>
+        <option id="filter.completedTasks" value="false"/>
+        <option id="filter.dueTodayTasks" value="false"/>
+        <option id="filter.overdueTasks" value="false"/>
+        <option id="filter.inProgressTodayTasks" value="false"/>
+        <timeline><![CDATA[5,13,28,0,23,17]]></timeline>
+        <option id="color.recent"><![CDATA[#cc0000 #993300 #cc00cc #ffff33 #f4f4f4 #3333ff #ff9966 #00cccc #000000]]></option>
+    </view>
+    <view id="resource-table">
+        <field id="0" name="Name" width="210" order="0"/>
+        <field id="1" name="Default role" width="86" order="1"/>
+    </view>
+    <!-- -->
+    <calendars>
+        <day-types>
+            <day-type id="0"/>
+            <day-type id="1"/>
+            <default-week id="1" name="default" sun="1" mon="0" tue="0" wed="0" thu="0" fri="0" sat="1"/>
+            <only-show-weekends value="false"/>
+            <overriden-day-types/>
+            <days/>
+        </day-types>
+    </calendars>
+    <tasks empty-milestones="true">
+        <taskproperties>
+            <taskproperty id="tpd0" name="type" type="default" valuetype="icon"/>
+            <taskproperty id="tpd1" name="priority" type="default" valuetype="icon"/>
+            <taskproperty id="tpd2" name="info" type="default" valuetype="icon"/>
+            <taskproperty id="tpd3" name="name" type="default" valuetype="text"/>
+            <taskproperty id="tpd4" name="begindate" type="default" valuetype="date"/>
+            <taskproperty id="tpd5" name="enddate" type="default" valuetype="date"/>
+            <taskproperty id="tpd6" name="duration" type="default" valuetype="int"/>
+            <taskproperty id="tpd7" name="completion" type="default" valuetype="int"/>
+            <taskproperty id="tpd8" name="coordinator" type="default" valuetype="text"/>
+            <taskproperty id="tpd9" name="predecessorsr" type="default" valuetype="text"/>
+        </taskproperties>
+        <task id="0" uid="8080a861bcdb469793175d2f0b747497" name="Project Planning" meeting="false" start="2024-10-03" duration="4" complete="0" thirdDate="2024-10-03" thirdDate-constraint="0" expand="true">
+            <task id="4" uid="6ff010701a1643e6b96658f6874f747d" name="Team Forming" color="#000000" meeting="false" start="2024-10-03" duration="1" complete="0" thirdDate="2024-09-30" thirdDate-constraint="0" expand="true"/>
+            <task id="3" uid="69263e4c449447d5a6a5ffd9c8ed8c2c" name="Identify Project Scope" color="#000000" meeting="false" start="2024-10-04" duration="1" complete="0" thirdDate="2024-10-02" thirdDate-constraint="0" expand="true"/>
+            <task id="2" uid="fc6555b4a0a140f6ac03b83ac6a9ef00" name="Research Similar Projects" color="#000000" meeting="false" start="2024-10-04" duration="2" complete="0" thirdDate="2024-10-02" thirdDate-constraint="0" expand="true"/>
+            <task id="1" uid="f53b92e80ed64e12a4857a29cd36646a" name="Initial Team Meeting" color="#000000" meeting="false" start="2024-10-08" duration="1" complete="0" thirdDate="2024-10-02" thirdDate-constraint="0" expand="true"/>
+        </task>
+        <task id="5" uid="9bb42844a90d4b02ba29f8121dccb315" name="Research &amp; Design" color="#ff9966" meeting="false" start="2024-10-09" duration="8" complete="0" thirdDate="2024-09-30" thirdDate-constraint="0" expand="true">
+            <task id="6" uid="9cae0ad55f0f4993878f9d05ae25d153" name="Research RFID Technology" color="#ff9966" meeting="false" start="2024-10-09" duration="3" complete="0" thirdDate="2024-09-25" thirdDate-constraint="0" expand="true"/>
+            <task id="7" uid="47cb3143587f4eb7a0179e1fbd094b6c" name="Research Spotify API" color="#ff9966" meeting="false" start="2024-10-11" duration="2" complete="0" thirdDate="2024-10-01" thirdDate-constraint="0" expand="true"/>
+            <task id="8" uid="003cbe226b9b401d98a4971edeb29cbd" name="Create L0 and L1 Block Diagrams" color="#ff9966" meeting="false" start="2024-10-14" duration="1" complete="0" thirdDate="2024-10-01" thirdDate-constraint="0" expand="true"/>
+            <task id="12" uid="433ba4fff335452ebc1ca750f098005c" name="Preliminary Schematic" color="#ff9966" meeting="false" start="2024-10-14" duration="3" complete="0" thirdDate="2024-09-27" thirdDate-constraint="0" expand="true"/>
+            <task id="30" uid="3366ba5537d74d99985ae9f50c4a9183" name="PCB Layout Design" color="#ff9966" meeting="false" start="2024-10-16" duration="3" complete="0" thirdDate="2024-10-09" thirdDate-constraint="0" expand="true"/>
+        </task>
+        <task id="13" uid="9b3753f89267435599641fba065b656d" name="Component Acquisition" color="#00cccc" meeting="false" start="2024-10-17" duration="5" complete="0" thirdDate="2024-10-03" thirdDate-constraint="0" expand="true">
+            <task id="14" uid="e33a0f23867c479f829414b212700050" name="Create a Component List" color="#00cccc" meeting="false" start="2024-10-17" duration="1" complete="0" thirdDate="2024-10-03" thirdDate-constraint="0" expand="true"/>
+            <task id="15" uid="9e2928042f3342f8aa0daa6ae70dc1a3" name="Order Components" color="#00cccc" meeting="false" start="2024-10-18" duration="3" complete="0" thirdDate="2024-10-03" thirdDate-constraint="0" expand="true"/>
+            <task id="16" uid="af6f70b0374042e5bd14518a86e43142" name="Verify Component Compatibility" color="#00cccc" meeting="false" start="2024-10-23" duration="1" complete="0" thirdDate="2024-10-03" thirdDate-constraint="0" expand="true"/>
+        </task>
+        <task id="17" uid="3689cee8ae5a4e1c8aeecf11503fdb14" name="Development" color="#3333ff" meeting="false" start="2024-10-24" duration="11" complete="0" thirdDate="2024-09-24" thirdDate-constraint="0" expand="true">
+            <task id="18" uid="197146c793bb467f826cd4b1e7b43460" name="Set Up Development Environment" color="#3333ff" meeting="false" start="2024-10-24" duration="3" complete="0" thirdDate="2024-09-30" thirdDate-constraint="0" expand="true"/>
+            <task id="19" uid="12b4ea6f1e7149559c33719d3562736a" name="Implement RFID Scanning" color="#3333ff" meeting="false" start="2024-10-30" duration="7" complete="0" thirdDate="2024-09-30" thirdDate-constraint="0" expand="true"/>
+            <task id="20" uid="607c0a30fa80451f8fee09187735fd1e" name="Implement Spotify Playback Functionality" color="#3333ff" meeting="false" start="2024-10-30" duration="7" complete="0" thirdDate="2024-09-30" thirdDate-constraint="0" expand="true"/>
+            <task id="27" uid="d85e204ab3954b4d94c375b09eac77ba" name="LCD display and user interface coding" color="#3333ff" meeting="false" start="2024-10-30" duration="7" complete="0" thirdDate="2024-10-08" thirdDate-constraint="0" expand="true"/>
+            <task id="22" uid="d525668d87414f51b300b602e12cd23b" name="Integrate Component with Raspberry Pi" color="#3333ff" meeting="false" start="2024-10-30" duration="7" complete="0" thirdDate="2024-10-10" thirdDate-constraint="0" expand="true"/>
+        </task>
+        <task id="23" uid="815398ef011f44bbb09fcc7a1c8170f2" name="Testing" color="#cc00cc" meeting="false" start="2024-11-08" duration="7" complete="0" thirdDate="2024-10-10" thirdDate-constraint="0" expand="true">
+            <task id="24" uid="1f7095877b3745b2b4982bc90f0cfc50" name="Functional Testing (RFID + Spotify)" color="#cc00cc" meeting="false" start="2024-11-08" duration="7" complete="0" thirdDate="2024-10-10" thirdDate-constraint="0" expand="true"/>
+            <task id="25" uid="d666dbd05adf4d9fa9c05e935601e7bc" name="Motor Control Testing" color="#cc00cc" meeting="false" start="2024-11-08" duration="7" complete="0" thirdDate="2024-10-10" thirdDate-constraint="0" expand="true"/>
+            <task id="26" uid="0d8028d92eee4f67ba0874bb6ff5bef0" name="User Interface and LCD Display Testing" color="#cc00cc" meeting="false" start="2024-11-08" duration="7" complete="0" thirdDate="2024-10-08" thirdDate-constraint="0" expand="true"/>
+        </task>
+        <task id="28" uid="14633dd3ff3d4f9aa998b30ddc4b3a2e" name="Finalization" color="#cc0000" meeting="false" start="2024-11-20" duration="7" complete="0" thirdDate="2024-10-09" thirdDate-constraint="0" expand="true">
+            <task id="29" uid="e46147601210474097110568b052093b" name="Enclosure Design and Assembly" color="#cc0000" meeting="false" start="2024-11-20" duration="7" complete="0" thirdDate="2024-10-09" thirdDate-constraint="0" expand="true"/>
+            <task id="31" uid="e043c45ce89e4b1982b2f201b4f56a5d" name="Final Testing" color="#cc0000" meeting="false" start="2024-11-20" duration="7" complete="0" thirdDate="2024-10-28" thirdDate-constraint="0" expand="true"/>
+            <task id="32" uid="c7d3e02d18694188b54972775e9db1e3" name="Project Wrap-up and Presentation" color="#cc0000" meeting="false" start="2024-11-20" duration="7" complete="0" thirdDate="2024-10-28" thirdDate-constraint="0" expand="true"/>
+        </task>
+    </tasks>
+    <resources/>
+    <allocations/>
+    <vacations/>
+    <previous/>
+    <roles roleset-name="Default"/>
+</project>
