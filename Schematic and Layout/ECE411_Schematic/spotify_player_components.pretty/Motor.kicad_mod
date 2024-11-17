@@ -1,0 +1,109 @@
+(footprint "Motor"
+	(version 20240108)
+	(generator "pcbnew")
+	(generator_version "8.0")
+	(layer "F.Cu")
+	(property "Reference" "REF**"
+		(at 2 -4 0)
+		(unlocked yes)
+		(layer "F.SilkS")
+		(uuid "530d0908-2c11-4b5f-9389-06dc8e763ec0")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.1)
+			)
+		)
+	)
+	(property "Value" "Motor"
+		(at 5 -7.5 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(uuid "a335e9af-6a56-41f4-bf29-42efde9a4327")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Footprint" ""
+		(at 0 0 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "e763dad6-3bcf-41fc-8f4f-e6946523d33c")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Datasheet" ""
+		(at 0 0 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "499a1c27-6a8a-4fcd-bab2-37454e480d70")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Description" ""
+		(at 0 0 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "4ee39390-b002-4aa2-bb1f-816978292bc3")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(attr through_hole)
+	(fp_rect
+		(start 0 -3)
+		(end 5.5 0)
+		(stroke
+			(width 0.1)
+			(type default)
+		)
+		(fill none)
+		(layer "F.SilkS")
+		(uuid "c424bf2b-3617-4a4c-951c-38d0abad5311")
+	)
+	(fp_text user "${REFERENCE}"
+		(at 5 -6 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(uuid "ab606207-46b5-4351-af99-c79cbc290749")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(pad "1" thru_hole circle
+		(at 1.5 -1.5)
+		(size 1.524 1.524)
+		(drill 1)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(uuid "2dc31b73-63df-4ad6-99d8-1c354ba77d20")
+	)
+	(pad "2" thru_hole circle
+		(at 4 -1.5)
+		(size 1.524 1.524)
+		(drill 1)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(uuid "47f66a7d-610f-4310-9b31-81f59bac427e")
+	)
+)
