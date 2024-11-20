@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?><project name="ECE 411 -  RFID Spotify Record Player Project" company="" webLink="http://" view-date="2024-10-02" view-index="0" gantt-divider-location="547" resource-divider-location="300" version="3.3.3300" locale="en_US">
+<?xml version="1.0" encoding="UTF-8"?><project name="ECE 411 -  RFID Spotify Record Player Project" company="" webLink="http://" view-date="2024-10-01" view-index="0" gantt-divider-location="548" resource-divider-location="300" version="3.3.3300" locale="en_US">
     <description/>
     <view zooming-state="default:3" id="gantt-chart">
         <field id="tpd3" name="Name" width="311" order="0"/>
@@ -9,8 +9,8 @@
         <option id="filter.dueTodayTasks" value="false"/>
         <option id="filter.overdueTasks" value="false"/>
         <option id="filter.inProgressTodayTasks" value="false"/>
-        <timeline><![CDATA[28,5,13,17,0,23]]></timeline>
-        <option id="color.recent"><![CDATA[#cc0000 #993300 #cc00cc #ffff33 #f4f4f4 #3333ff #ff9966 #00cccc #000000]]></option>
+        <timeline><![CDATA[23,28,5,0,17,13]]></timeline>
+        <option id="color.recent"><![CDATA[#3333ff #cc0000 #993300 #cc00cc #ffff33 #f4f4f4 #ff9966 #00cccc #000000]]></option>
     </view>
     <view id="resource-table">
         <field id="0" name="Name" width="210" order="0"/>
@@ -78,7 +78,7 @@
             </task>
             <task id="16" uid="af6f70b0374042e5bd14518a86e43142" name="Verify Component Compatibility" color="#00cccc" meeting="false" start="2024-10-22" duration="2" complete="0" thirdDate="2024-10-03" thirdDate-constraint="0" expand="true"/>
         </task>
-        <task id="17" uid="3689cee8ae5a4e1c8aeecf11503fdb14" name="Development" color="#3333ff" meeting="false" start="2024-10-24" duration="10" complete="0" thirdDate="2024-09-24" thirdDate-constraint="0" expand="true">
+        <task id="17" uid="3689cee8ae5a4e1c8aeecf11503fdb14" name="Development" color="#3333ff" meeting="false" start="2024-10-24" duration="13" complete="0" thirdDate="2024-09-24" thirdDate-constraint="0" expand="true">
             <depend id="23" type="2" difference="0" hardness="Strong"/>
             <task id="18" uid="197146c793bb467f826cd4b1e7b43460" name="Set Up Development Environment" color="#3333ff" meeting="false" start="2024-10-24" duration="3" complete="0" thirdDate="2024-09-30" thirdDate-constraint="0" expand="true">
                 <depend id="19" type="2" difference="0" hardness="Strong"/>
@@ -89,26 +89,32 @@
             <task id="19" uid="12b4ea6f1e7149559c33719d3562736a" name="Implement RFID Scanning" color="#3333ff" meeting="false" start="2024-10-29" duration="7" complete="0" thirdDate="2024-09-30" thirdDate-constraint="0" expand="true"/>
             <task id="20" uid="607c0a30fa80451f8fee09187735fd1e" name="Implement Spotify Playback Functionality" color="#3333ff" meeting="false" start="2024-10-29" duration="7" complete="0" thirdDate="2024-09-30" thirdDate-constraint="0" expand="true"/>
             <task id="27" uid="d85e204ab3954b4d94c375b09eac77ba" name="LCD Display and User Interface Coding" color="#3333ff" meeting="false" start="2024-10-29" duration="7" complete="0" thirdDate="2024-10-08" thirdDate-constraint="0" expand="true"/>
-            <task id="22" uid="d525668d87414f51b300b602e12cd23b" name="Integrate Component with Raspberry Pi" color="#3333ff" meeting="false" start="2024-10-29" duration="7" complete="0" thirdDate="2024-10-10" thirdDate-constraint="0" expand="true"/>
+            <task id="22" uid="d525668d87414f51b300b602e12cd23b" name="Integrate Component with Raspberry Pi" color="#3333ff" meeting="false" start="2024-10-29" duration="7" complete="0" thirdDate="2024-10-10" thirdDate-constraint="0" expand="true">
+                <depend id="33" type="2" difference="0" hardness="Strong"/>
+            </task>
+            <task id="33" uid="fa33f0e617db467ea8c28eb75d425d29" name="Update Schematic &amp; Layout" color="#3333ff" meeting="false" start="2024-11-07" duration="2" complete="0" thirdDate="2024-10-24" thirdDate-constraint="0" expand="true">
+                <depend id="34" type="2" difference="0" hardness="Strong"/>
+            </task>
+            <task id="34" uid="8444be5905d14c3da43ef6d9b0f1271e" name="Add Test Points and Bypass Capacitors" color="#3333ff" meeting="false" start="2024-11-11" duration="1" complete="0" thirdDate="2024-10-24" thirdDate-constraint="0" expand="true"/>
         </task>
-        <task id="23" uid="815398ef011f44bbb09fcc7a1c8170f2" name="Testing" color="#cc00cc" meeting="false" start="2024-11-07" duration="12" complete="0" thirdDate="2024-10-10" thirdDate-constraint="0" expand="true">
+        <task id="23" uid="815398ef011f44bbb09fcc7a1c8170f2" name="Testing" color="#cc00cc" meeting="false" start="2024-11-12" duration="12" complete="0" thirdDate="2024-10-10" thirdDate-constraint="0" expand="true">
             <depend id="28" type="2" difference="0" hardness="Strong"/>
-            <task id="24" uid="1f7095877b3745b2b4982bc90f0cfc50" name="Functional Testing (RFID + Spotify)" color="#cc00cc" meeting="false" start="2024-11-07" duration="4" complete="0" thirdDate="2024-10-10" thirdDate-constraint="0" expand="true">
+            <task id="24" uid="1f7095877b3745b2b4982bc90f0cfc50" name="Functional Testing (RFID + Spotify)" color="#cc00cc" meeting="false" start="2024-11-12" duration="4" complete="0" thirdDate="2024-10-10" thirdDate-constraint="0" expand="true">
                 <depend id="25" type="2" difference="0" hardness="Strong"/>
             </task>
-            <task id="25" uid="d666dbd05adf4d9fa9c05e935601e7bc" name="Motor Control Testing" color="#cc00cc" meeting="false" start="2024-11-13" duration="4" complete="0" thirdDate="2024-10-10" thirdDate-constraint="0" expand="true">
+            <task id="25" uid="d666dbd05adf4d9fa9c05e935601e7bc" name="Motor Control Testing" color="#cc00cc" meeting="false" start="2024-11-18" duration="4" complete="0" thirdDate="2024-10-10" thirdDate-constraint="0" expand="true">
                 <depend id="26" type="2" difference="0" hardness="Strong"/>
             </task>
-            <task id="26" uid="0d8028d92eee4f67ba0874bb6ff5bef0" name="User Interface and LCD Display Testing" color="#cc00cc" meeting="false" start="2024-11-19" duration="4" complete="0" thirdDate="2024-10-08" thirdDate-constraint="0" expand="true"/>
+            <task id="26" uid="0d8028d92eee4f67ba0874bb6ff5bef0" name="User Interface and LCD Display Testing" color="#cc00cc" meeting="false" start="2024-11-22" duration="4" complete="0" thirdDate="2024-10-08" thirdDate-constraint="0" expand="true"/>
         </task>
-        <task id="28" uid="14633dd3ff3d4f9aa998b30ddc4b3a2e" name="Finalization" color="#cc0000" meeting="false" start="2024-11-25" duration="9" complete="0" thirdDate="2024-10-09" thirdDate-constraint="0" expand="true">
-            <task id="29" uid="e46147601210474097110568b052093b" name="Enclosure Design and Assembly" color="#cc0000" meeting="false" start="2024-11-25" duration="4" complete="0" thirdDate="2024-10-09" thirdDate-constraint="0" expand="true">
+        <task id="28" uid="14633dd3ff3d4f9aa998b30ddc4b3a2e" name="Finalization" color="#cc0000" meeting="false" start="2024-11-28" duration="9" complete="0" thirdDate="2024-10-09" thirdDate-constraint="0" expand="true">
+            <task id="29" uid="e46147601210474097110568b052093b" name="Enclosure Design and Assembly" color="#cc0000" meeting="false" start="2024-11-28" duration="4" complete="0" thirdDate="2024-10-09" thirdDate-constraint="0" expand="true">
                 <depend id="31" type="2" difference="0" hardness="Strong"/>
             </task>
-            <task id="31" uid="e043c45ce89e4b1982b2f201b4f56a5d" name="Final Testing" color="#cc0000" meeting="false" start="2024-11-29" duration="2" complete="0" thirdDate="2024-10-28" thirdDate-constraint="0" expand="true">
+            <task id="31" uid="e043c45ce89e4b1982b2f201b4f56a5d" name="Final Testing" color="#cc0000" meeting="false" start="2024-12-04" duration="2" complete="0" thirdDate="2024-10-28" thirdDate-constraint="0" expand="true">
                 <depend id="32" type="2" difference="0" hardness="Strong"/>
             </task>
-            <task id="32" uid="c7d3e02d18694188b54972775e9db1e3" name="Project Wrap-up and Presentation" color="#cc0000" meeting="false" start="2024-12-03" duration="3" complete="0" thirdDate="2024-10-28" thirdDate-constraint="0" expand="true"/>
+            <task id="32" uid="c7d3e02d18694188b54972775e9db1e3" name="Project Wrap-up and Presentation" color="#cc0000" meeting="false" start="2024-12-06" duration="3" complete="0" thirdDate="2024-10-28" thirdDate-constraint="0" expand="true"/>
         </task>
     </tasks>
     <resources/>
