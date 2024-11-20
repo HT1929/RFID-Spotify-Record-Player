@@ -393,7 +393,7 @@
 					)
 				)
 			)
-			(pin power_in line
+			(pin input line
 				(at 0 17.78 270)
 				(length 2.54)
 				(name "VDD"
@@ -758,7 +758,7 @@
 					)
 				)
 			)
-			(pin power_in line
+			(pin input line
 				(at -8.89 35.56 270)
 				(length 5.08)
 				(name "3,3V"
