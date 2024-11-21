@@ -49,7 +49,7 @@
         "silk_text_upright": false,
         "zones": {
           "45_degree_only": true,
-          "min_clearance": 0.0
+          "min_clearance": 0.2
         }
       },
       "diff_pair_dimensions": [
@@ -59,10 +59,7 @@
           "width": 0.0
         }
       ],
-      "drc_exclusions": [
-        "unconnected_items|110910000|46230000|54d3fc80-be59-4831-bfc5-ceba690d926d|718a6114-ce02-42f2-a38b-6e6fb706c987",
-        "unconnected_items|120460000|51800000|472b1443-6fe9-41ea-a00a-86c1e3a8e2da|dd7f24e0-4b76-4b9b-96ca-cd8404f2c7ca"
-      ],
+      "drc_exclusions": [],
       "meta": {
         "version": 2
       },
@@ -95,7 +92,7 @@
         "microvia_drill_out_of_range": "error",
         "missing_courtyard": "ignore",
         "missing_footprint": "warning",
-        "net_conflict": "warning",
+        "net_conflict": "ignore",
         "npth_inside_courtyard": "ignore",
         "padstack": "error",
         "pth_inside_courtyard": "ignore",
@@ -138,7 +135,7 @@
         "min_track_width": 0.1524,
         "min_via_annular_width": 0.127,
         "min_via_diameter": 0.508,
-        "solder_mask_to_copper_clearance": 0.0,
+        "solder_mask_to_copper_clearance": 0.127,
         "use_height_for_length_calcs": true
       },
       "teardrop_options": [
