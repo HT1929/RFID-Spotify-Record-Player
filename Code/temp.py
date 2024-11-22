@@ -11,23 +11,23 @@ from RPLCD.i2c import CharLCD
 DEVICE_ID = "98bb0735e28656bac098d927d410c3138a4b5bca"
 CLIENT_ID = "fc465222f6a94ee292f29574f20398e9"
 CLIENT_SECRET = "b5e442bdbaee418da3c4bab8d7970b75"
+REGISTER_RFID_TAG = 839325964744  # Replace with your actual register RFID tag ID
+PAUSE_PLAYBACK = 682607722456
 
-# Setup GPIO pins
+# GPIO Setup
 MOTOR_DIRECTION_PIN = 16
 MOTOR_INVERTED_PIN = 26
 PWM_PIN = 12
-REGISTER_RFID_TAG = 839325964744  # Replace with your actual register RFID tag ID
-PAUSE_PLAYBACK = 682607722456
 
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(MOTOR_DIRECTION_PIN, GPIO.OUT)
 GPIO.setup(MOTOR_INVERTED_PIN, GPIO.OUT)
 GPIO.setup(PWM_PIN, GPIO.OUT)
 
-pwm = GPIO.PWM(PWM_PIN, 1000)  # PWM on PWM_PIN with a frequency of 1000 Hz
-pwm.start(0)  # Start with 0% duty cycle (motor off)
+pwm = GPIO.PWM(PWM_PIN, 1000)  # PWM at 1000 Hz
+pwm.start(0)  # Start with motor off
 
-# Initialize Spotify client
+# Spotify API Initialization
 sp = spotipy.Spotify(auth_manager=SpotifyOAuth(
     client_id=CLIENT_ID,
     client_secret=CLIENT_SECRET,
@@ -35,10 +35,7 @@ sp = spotipy.Spotify(auth_manager=SpotifyOAuth(
     scope="user-read-playback-state,user-modify-playback-state"
 ))
 
-# Initialize LCD
-lcd = CharLCD('PCF8574', 0x27)  # Update I2C address if necessary
-
-# Setup SQLite database
+# SQLite Database Setup
 conn = sqlite3.connect('rfid_spotify.db', check_same_thread=False)
 c = conn.cursor()
 c.execute('''
@@ -49,10 +46,16 @@ c.execute('''
           ''')
 conn.commit()
 
-current_playing = None  # Global variable to track the currently playing track
-stop_threads = False    # Global flag to stop all threads
+# LCD Initialization
+lcd = CharLCD('PCF8574', 0x27)  # Update I2C address if necessary
+
+# Global variables for thread coordination
+stop_threads = False
+display_state = {"type": "idle", "message": ""}  # Display state
+current_track = {"name": None}  # Currently playing track
 
 
+# Helper functions
 def set_motor(speed, direction):
     """Set motor speed and direction."""
     pwm.ChangeDutyCycle(speed)
@@ -61,7 +64,7 @@ def set_motor(speed, direction):
 
 
 def display_both_lines_with_scroll(line1_message, line2_message, delay=0.3):
-    """Display messages simultaneously on both rows of the LCD with scrolling."""
+    """Display messages on both rows of the LCD with scrolling."""
     lcd.clear()
     max_chars = 16
     padded_line1 = line1_message + " " * max_chars
@@ -87,8 +90,45 @@ def get_track_name(uri):
         return "Unknown Track"
 
 
+def register_tag(tag_id, uri):
+    """Register a new RFID tag with a Spotify URI."""
+    try:
+        c.execute("INSERT OR REPLACE INTO tag_to_uri (tag_id, uri) VALUES (?, ?)", (tag_id, uri))
+        conn.commit()
+        display_state["type"] = "idle"
+        print(f"Tag {tag_id} registered with URI {uri}.")
+    except Exception as e:
+        print(f"Error registering tag: {e}")
+
+
+# Thread Functions
+def manage_display():
+    """Thread to manage the LCD display."""
+    global stop_threads, display_state, current_track
+    while not stop_threads:
+        if display_state["type"] == "song":
+            # Show the current track name repeatedly
+            if current_track["name"]:
+                display_both_lines_with_scroll("Playing", current_track["name"], delay=0.5)
+        elif display_state["type"] == "error":
+            # Show an error message once
+            display_both_lines_with_scroll("Error", display_state["message"], delay=0.3)
+            display_state["type"] = "idle"
+        elif display_state["type"] == "register":
+            # Show registration mode
+            display_both_lines_with_scroll("Registration", "Mode Active", delay=0.3)
+        elif display_state["type"] == "pause":
+            # Show pause message
+            display_both_lines_with_scroll("Playback", "Paused", delay=0.3)
+            display_state["type"] = "idle"
+        else:
+            # Default idle state
+            display_both_lines_with_scroll("RFID Spotify", "Waiting for scan...", delay=0.5)
+        sleep(1)  # Reduce refresh rate
+
+
 def check_playback_status():
-    """Thread to monitor Spotify playback status and control the motor."""
+    """Thread to check Spotify playback status and control motor."""
     global stop_threads
     while not stop_threads:
         try:
@@ -101,64 +141,61 @@ def check_playback_status():
             print(f"Error checking playback status: {e}")
         sleep(1)
 
-def register_tag(tag_id, uri):
-    """Register a new RFID tag with the corresponding URI in the database."""
-    try:
-        c.execute("INSERT OR REPLACE INTO tag_to_uri (tag_id, uri) VALUES (?, ?)", (tag_id, uri))
-        conn.commit()
-        display_both_lines_with_scroll("Tag Registered", "Successfully!", delay=0.3)
-    except Exception as e:
-        print(f"Error registering tag: {e}")
-        display_both_lines_with_scroll("Registration Failed", "Try Again", delay=0.3)
 
 def play_song_from_rfid():
     """Thread to handle RFID scanning and play songs."""
-    global current_playing, stop_threads
+    global current_track, display_state, stop_threads
     reader = SimpleMFRC522()
     try:
         while not stop_threads:
             id, _ = reader.read()
 
-            # Handle pause playback tag
             if id == PAUSE_PLAYBACK:
                 try:
-                    sp.pause_playback(device_id=DEVICE_ID)  # Pause Spotify playback
-                    set_motor(0, False)  # Stop the motor
-                    display_both_lines_with_scroll("Playback", "Paused", delay=0.3)
+                    sp.pause_playback(device_id=DEVICE_ID)
+                    set_motor(0, False)
+                    display_state["type"] = "pause"
                 except Exception as e:
-                    print(f"Error pausing playback: {e}")
+                    display_state["type"] = "error"
+                    display_state["message"] = f"Pause failed: {e}"
                 continue
 
-            # Handle special RFID tag for registration
             if id == REGISTER_RFID_TAG:
-                display_both_lines_with_scroll("Registration", "Mode Active", delay=0.3)
-                while True:  # Stay in registration mode until a new tag is scanned
+                display_state["type"] = "register"
+                while True:
                     id, _ = reader.read()
                     if id != REGISTER_RFID_TAG and id != PAUSE_PLAYBACK:
-                        # Get the current playing URI from Spotify
                         uri = sp.current_playback().get('item', {}).get('uri')
                         if uri:
                             register_tag(id, uri)
                         else:
-                            display_both_lines_with_scroll("No Playback Found", "Start Spotify", delay=0.3)
+                            display_state["type"] = "error"
+                            display_state["message"] = "No Playback Found"
                         break
                 continue
 
-            # Play a song if it's a regular tag
             c.execute("SELECT uri FROM tag_to_uri WHERE tag_id=?", (id,))
             result = c.fetchone()
             if result:
                 uri = result[0]
-                track_name = get_track_name(uri)
-                display_both_lines_with_scroll("Playing", track_name, delay=0.3)
-                sp.start_playback(device_id=DEVICE_ID, uris=[uri])
-                current_playing = uri
+                if uri != current_track.get("uri"):
+                    current_track["name"] = get_track_name(uri)
+                    display_state["type"] = "song"
+                    try:
+                        sp.start_playback(device_id=DEVICE_ID, uris=[uri])
+                    except Exception as e:
+                        display_state["type"] = "error"
+                        display_state["message"] = f"Playback Error: {e}"
             else:
-                display_both_lines_with_scroll("Tag Not Found", "Please Register", delay=0.3)
+                current_track["name"] = None
+                display_state["type"] = "error"
+                display_state["message"] = "Tag Not Found"
             sleep(1)
     finally:
         print("RFID thread exiting...")
 
+
+# Main Function
 def main():
     """Main thread to run the program."""
     global stop_threads
@@ -166,18 +203,23 @@ def main():
         # Start the threads
         playback_thread = threading.Thread(target=check_playback_status, daemon=True)
         rfid_thread = threading.Thread(target=play_song_from_rfid, daemon=True)
+        display_thread = threading.Thread(target=manage_display, daemon=True)
+
         playback_thread.start()
         rfid_thread.start()
+        display_thread.start()
 
-        # Keep the main thread running
         while True:
             sleep(1)
+
     except KeyboardInterrupt:
         print("Stopping threads...")
         stop_threads = True
+
+    finally:
         playback_thread.join()
         rfid_thread.join()
-    finally:
+        display_thread.join()
         display_both_lines_with_scroll("Cleaning Up", "Goodbye!", delay=0.3)
         set_motor(0, False)
         pwm.stop()
