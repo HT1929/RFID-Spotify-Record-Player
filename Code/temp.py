@@ -52,7 +52,7 @@ lcd = CharLCD('PCF8574', 0x27)  # Update I2C address if necessary
 # Global variables for thread coordination
 stop_threads = False
 display_state = {"type": "idle", "message": ""}  # Display state
-current_track = {"name": None}  # Currently playing track
+current_track = {"name": None, "uri": None}  # Currently playing track
 
 
 # Helper functions
@@ -106,10 +106,9 @@ def manage_display():
     """Thread to manage the LCD display."""
     global stop_threads, display_state, current_track
     while not stop_threads:
-        if display_state["type"] == "song":
-            # Show the current track name repeatedly
-            if current_track["name"]:
-                display_both_lines_with_scroll("Playing", current_track["name"], delay=0.5)
+        if display_state["type"] == "song" and current_track["name"]:
+            # Show the current track name repeatedly while playing
+            display_both_lines_with_scroll("Playing", current_track["name"], delay=0.5)
         elif display_state["type"] == "error":
             # Show an error message once
             display_both_lines_with_scroll("Error", display_state["message"], delay=0.3)
@@ -129,14 +128,18 @@ def manage_display():
 
 def check_playback_status():
     """Thread to check Spotify playback status and control motor."""
-    global stop_threads
+    global stop_threads, display_state, current_track
     while not stop_threads:
         try:
             playback = sp.current_playback()
             if playback and playback.get('is_playing', False):
                 set_motor(50, True)  # Motor ON
+                display_state["type"] = "song"  # Ensure the song is displayed
             else:
                 set_motor(0, False)  # Motor OFF
+                if display_state["type"] == "song":  # Only reset if no playback
+                    display_state["type"] = "idle"
+                    current_track["name"] = None
         except Exception as e:
             print(f"Error checking playback status: {e}")
         sleep(1)
@@ -168,6 +171,7 @@ def play_song_from_rfid():
                         uri = sp.current_playback().get('item', {}).get('uri')
                         if uri:
                             register_tag(id, uri)
+                            display_state["type"] = "idle"
                         else:
                             display_state["type"] = "error"
                             display_state["message"] = "No Playback Found"
@@ -178,7 +182,8 @@ def play_song_from_rfid():
             result = c.fetchone()
             if result:
                 uri = result[0]
-                if uri != current_track.get("uri"):
+                if uri != current_track["uri"]:
+                    current_track["uri"] = uri
                     current_track["name"] = get_track_name(uri)
                     display_state["type"] = "song"
                     try:
