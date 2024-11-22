@@ -101,6 +101,15 @@ def check_playback_status():
             print(f"Error checking playback status: {e}")
         sleep(1)
 
+def register_tag(tag_id, uri):
+    """Register a new RFID tag with the corresponding URI in the database."""
+    try:
+        c.execute("INSERT OR REPLACE INTO tag_to_uri (tag_id, uri) VALUES (?, ?)", (tag_id, uri))
+        conn.commit()
+        display_both_lines_with_scroll("Tag Registered", "Successfully!", delay=0.3)
+    except Exception as e:
+        print(f"Error registering tag: {e}")
+        display_both_lines_with_scroll("Registration Failed", "Try Again", delay=0.3)
 
 def play_song_from_rfid():
     """Thread to handle RFID scanning and play songs."""
@@ -109,6 +118,23 @@ def play_song_from_rfid():
     try:
         while not stop_threads:
             id, _ = reader.read()
+
+            # Handle special RFID tag for registration
+            if id == REGISTER_RFID_TAG:
+                display_both_lines_with_scroll("Registration", "Mode Active", delay=0.3)
+                while True:  # Stay in registration mode until a new tag is scanned
+                    id, _ = reader.read()
+                    if id != REGISTER_RFID_TAG and id != PAUSE_PLAYBACK:
+                        # Get the current playing URI from Spotify
+                        uri = sp.current_playback().get('item', {}).get('uri')
+                        if uri:
+                            register_tag(id, uri)
+                        else:
+                            display_both_lines_with_scroll("No Playback Found", "Start Spotify", delay=0.3)
+                        break
+                continue
+
+            # Play a song if it's a regular tag
             c.execute("SELECT uri FROM tag_to_uri WHERE tag_id=?", (id,))
             result = c.fetchone()
             if result:
@@ -122,6 +148,7 @@ def play_song_from_rfid():
             sleep(1)
     finally:
         print("RFID thread exiting...")
+
 
 
 def main():
