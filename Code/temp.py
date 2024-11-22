@@ -119,6 +119,16 @@ def play_song_from_rfid():
         while not stop_threads:
             id, _ = reader.read()
 
+            # Handle pause playback tag
+            if id == PAUSE_PLAYBACK:
+                try:
+                    sp.pause_playback(device_id=DEVICE_ID)  # Pause Spotify playback
+                    set_motor(0, False)  # Stop the motor
+                    display_both_lines_with_scroll("Playback", "Paused", delay=0.3)
+                except Exception as e:
+                    print(f"Error pausing playback: {e}")
+                continue
+
             # Handle special RFID tag for registration
             if id == REGISTER_RFID_TAG:
                 display_both_lines_with_scroll("Registration", "Mode Active", delay=0.3)
@@ -148,8 +158,6 @@ def play_song_from_rfid():
             sleep(1)
     finally:
         print("RFID thread exiting...")
-
-
 
 def main():
     """Main thread to run the program."""
