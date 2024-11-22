@@ -39,7 +39,7 @@ sp = spotipy.Spotify(auth_manager=SpotifyOAuth(
 lcd = CharLCD('PCF8574', 0x27)  # Update I2C address if necessary
 
 # Setup SQLite database
-conn = sqlite3.connect('rfid_spotify.db')
+conn = sqlite3.connect('rfid_spotify.db', check_same_thread=False)
 c = conn.cursor()
 c.execute('''
           CREATE TABLE IF NOT EXISTS tag_to_uri (
