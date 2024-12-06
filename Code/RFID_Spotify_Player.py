@@ -9,7 +9,7 @@ from RPLCD.i2c import CharLCD
 import queue
 
 # Setup constants
-DEVICE_ID = "98bb0735e28656bac098d927d410c3138a4bab8d7970b75"
+DEVICE_ID = "98bb0735e28656bac098d927d410c3138a4b5bca"#ab8d7970b75"
 CLIENT_ID = "fc465222f6a94ee292f29574f20398e9"
 CLIENT_SECRET = "b5e442bdbaee418da3c4bab8d7970b75"
 
@@ -64,6 +64,7 @@ c.execute('''
           CREATE TABLE IF NOT EXISTS tag_to_uri (
               tag_id INTEGER PRIMARY KEY,
               uri TEXT
+              start_track_uri TEXT
           )
           ''')
 conn.commit()
@@ -189,23 +190,26 @@ def play_song_from_rfid():
         while not stop_threads:
             set_rfid_led(True)
             id, _ = reader.read()
-
+            print(id)
             if id == PAUSE_PLAYBACK:
+                print('in pause playhback')
                 sp.pause_playback(device_id=DEVICE_ID)
+                print('after sp command')
                 set_motor(0, False)
-                display_message("Playback", "Paused", 5)
+                display_message("Playback", "Paused", 3)
                 continue
             if id == PLAY_PLAYBACK:
                 sp.start_playback(device_id=DEVICE_ID)
-                display_message("Playback", "Resumed", 5)
+                display_message("Playback", "Resumed", 3)
                 continue
             if id == SKIP_PLAYBACK:
                 sp.next_track(device_id=DEVICE_ID)
-                display_message("Skipping", "Next Track", 5)
+                sp.start_playback(device_id=DEVICE_ID)
+                display_message("Skipping", "Next Track", 3)
                 continue
 
             if id == REGISTER_RFID_TAG:
-                display_message("Registration", "Mode Active", 5)
+                display_message("Registration", "Mode Active", 3)
                 while True:
                     id, _ = reader.read()
                     if id != REGISTER_RFID_TAG:
@@ -214,7 +218,7 @@ def play_song_from_rfid():
                             album_uri = uri['item']['album']['uri']
                             register_tag(id, album_uri)
                         else:
-                            display_message("No Playback Found", "Start Spotify", 5)
+                            display_message("No Playback Found", "Start Spotify", 3)
                         break
                 continue
 
@@ -224,9 +228,9 @@ def play_song_from_rfid():
                 uri = result[0]
                 sp.start_playback(device_id=DEVICE_ID, context_uri=uri)
                 track_name = get_track_name()
-                display_message("Playing", track_name[:16], 5)
+                display_message("Playing", track_name[:16], 3)
             else:
-                display_message("Tag Not Found", "Please Register", 5)
+                display_message("Tag Not Found", "Please Register", 3)
             sleep(1)
     finally:
         set_rfid_led(False)
