@@ -1,0 +1,38 @@
+import RPi.GPIO as GPIO
+from time import sleep
+
+# Pin assignments for LEDs
+LCD_LED_PIN = 29
+SPEAKER_LED_PIN = 31
+MOTOR_LED_PIN = 33
+RFID_LED_PIN = 35
+
+# Setup GPIO
+GPIO.setmode(GPIO.BCM)
+GPIO.setup(LCD_LED_PIN, GPIO.OUT)
+GPIO.setup(SPEAKER_LED_PIN, GPIO.OUT)
+GPIO.setup(MOTOR_LED_PIN, GPIO.OUT)
+GPIO.setup(RFID_LED_PIN, GPIO.OUT)
+
+# Function to test LEDs
+def test_leds():
+    leds = {
+        "LCD Indicator": LCD_LED_PIN,
+        "Speaker Indicator": SPEAKER_LED_PIN,
+        "Motor Indicator": MOTOR_LED_PIN,
+        "RFID Indicator": RFID_LED_PIN
+    }
+    
+    try:
+        for name, pin in leds.items():
+            print(f"Testing {name}")
+            GPIO.output(pin, GPIO.HIGH)  # Turn on LED
+            sleep(1)  # Keep it on for 1 second
+            GPIO.output(pin, GPIO.LOW)  # Turn off LED
+            sleep(0.5)  # Wait before testing the next LED
+        print("LED test complete!")
+    finally:
+        GPIO.cleanup()  # Reset GPIO settings
+
+# Run the test
+test_leds()
