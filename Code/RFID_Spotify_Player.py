@@ -63,12 +63,13 @@ c = conn.cursor()
 c.execute('''
           CREATE TABLE IF NOT EXISTS tag_to_uri (
               tag_id INTEGER PRIMARY KEY,
-              uri TEXT
-              start_track_uri TEXT
+              uri TEXT,
+              start_track_uri TEXT,
+              track_position INTEGER
           )
           ''')
 conn.commit()
-
+#c.execute("ALTER TABLE tag_to_uri ADD COLUMN track_position INTEGER")
 # Global Variables
 stop_threads = False
 lcd_message_queue = queue.Queue()  # LCD message queue
@@ -103,7 +104,7 @@ def set_motor(speed, direction):
 
 
 # LCD Message Queue
-def display_message(line1, line2, duration=3):
+def display_message(line1, line2, duration=2):
     lcd_message_queue.put((line1, line2, duration))
 
 
@@ -172,9 +173,9 @@ def check_playback_status():
 
 
 # Register RFID Tags
-def register_tag(tag_id, uri):
+def register_tag(tag_id, uri, start_track_uri, track_position):
     try:
-        c.execute("INSERT OR REPLACE INTO tag_to_uri (tag_id, uri) VALUES (?, ?)", (tag_id, uri))
+        c.execute("INSERT OR REPLACE INTO tag_to_uri (tag_id, uri, start_track_uri, track_position) VALUES (?, ?, ?, ?)", (tag_id, uri, start_track_uri, track_position))
         conn.commit()
         display_message("Tag Registered", "Successfully!", 5)
     except Exception as e:
@@ -192,45 +193,59 @@ def play_song_from_rfid():
             id, _ = reader.read()
             print(id)
             if id == PAUSE_PLAYBACK:
-                print('in pause playhback')
                 sp.pause_playback(device_id=DEVICE_ID)
-                print('after sp command')
                 set_motor(0, False)
-                display_message("Playback", "Paused", 3)
+                display_message("Playback", "Paused", 2)
                 continue
             if id == PLAY_PLAYBACK:
                 sp.start_playback(device_id=DEVICE_ID)
-                display_message("Playback", "Resumed", 3)
+                display_message("Playback", "Resumed", 2)
                 continue
             if id == SKIP_PLAYBACK:
                 sp.next_track(device_id=DEVICE_ID)
                 sp.start_playback(device_id=DEVICE_ID)
-                display_message("Skipping", "Next Track", 3)
+                display_message("Skipping", "Next Track", 2)
                 continue
 
             if id == REGISTER_RFID_TAG:
-                display_message("Registration", "Mode Active", 3)
+                display_message("Registration", "Mode Active", 2)
                 while True:
                     id, _ = reader.read()
+                    if (id != PAUSE_PLAYBACK and id != PLAY_PLAYBACK and id != SKIP_PLAYBACK):
+                        continue
                     if id != REGISTER_RFID_TAG:
                         uri = sp.current_playback()
-                        if uri:
+                        if uri and uri.get('item'):
                             album_uri = uri['item']['album']['uri']
-                            register_tag(id, album_uri)
+                            track_uri = uri['item']['uri']
+                            album_tracks = sp.album_tracks(album_uri)['items']
+                            track_position = next((i for i, t in enumerate(album_tracks) if t['uri'] == track_uri), 0
+                            )
+                            track_name = uri['item']['name']
+                            
+                            register_tag(id, album_uri, track_uri,track_position)
                         else:
-                            display_message("No Playback Found", "Start Spotify", 3)
+                            display_message("No Playback Found", "Start Spotify", 2)
                         break
                 continue
 
-            c.execute("SELECT uri FROM tag_to_uri WHERE tag_id=?", (id,))
+            c.execute("SELECT uri, start_track_uri, track_position FROM tag_to_uri WHERE tag_id=?", (id,))
             result = c.fetchone()
+            print(f"datab result for tag {id}: {result}")
+            for row in c.execute("SELECT * FROM tag_to_uri"):
+                print(row)
             if result:
-                uri = result[0]
-                sp.start_playback(device_id=DEVICE_ID, context_uri=uri)
-                track_name = get_track_name()
-                display_message("Playing", track_name[:16], 3)
+                album_uri, start_track_uri, track_position = result
+                
+                #uri = result[0]
+                sp.start_playback(device_id=DEVICE_ID, context_uri=album_uri, offset={"position": track_position})
+                
+                #sleep(1)
+                #sp.start_playback(device_id=DEVICE_ID, uris=[start_track_uri])
+                track_name = sp.track(start_track_uri)['name']#get_track_name()
+                display_message("Playing", track_name[:16], 2)
             else:
-                display_message("Tag Not Found", "Please Register", 3)
+                display_message("Tag Not Found", "Please Register", 2)
             sleep(1)
     finally:
         set_rfid_led(False)
