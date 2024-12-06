@@ -17,9 +17,27 @@ MOTOR_DIRECTION_PIN = 16
 MOTOR_INVERTED_PIN = 26
 PWM_PIN = 12
 REGISTER_RFID_TAG = 839325964744  # Replace with your actual register RFID tag ID
-PAUSE_PLAYBACK = 682607722456
+PAUSE_PLAYBACK = 114259767899
+PLAY_PLAYBACK = 115686027819
+SKIP_PLAYBACK = 389775340099
+LCD_LED_PIN = 5
+SPEAKER_LED_PIN = 6
+MOTOR_LED_PIN = 13
+RFID_LED_PIN = 19
+     
 
 GPIO.setmode(GPIO.BCM)
+
+GPIO.setup(SPEAKER_LED_PIN, GPIO.OUT)
+GPIO.setup(LCD_LED_PIN, GPIO.OUT)
+GPIO.setup(MOTOR_LED_PIN, GPIO.OUT)
+GPIO.setup(RFID_LED_PIN, GPIO.OUT)
+
+GPIO.output(LCD_LED_PIN, GPIO.LOW)
+GPIO.output(SPEAKER_LED_PIN, GPIO.LOW)
+GPIO.output(RFID_LED_PIN, GPIO.LOW)
+GPIO.output(MOTOR_LED_PIN, GPIO.LOW)
+   
 GPIO.setup(MOTOR_DIRECTION_PIN, GPIO.OUT)
 GPIO.setup(MOTOR_INVERTED_PIN, GPIO.OUT)
 GPIO.setup(PWM_PIN, GPIO.OUT)
@@ -52,9 +70,22 @@ conn.commit()
 current_playing = None  # Global variable to track the currently playing track
 stop_threads = False    # Global flag to stop all threads
 
+def set_lcd_led(state):
+    GPIO.output(LCD_LED_PIN, GPIO.HIGH if state else GPIO.LOW)
+def set_motor_led(state):
+    GPIO.output(MOTOR_LED_PIN, GPIO.HIGH if state else GPIO.LOW)
+def set_speaker_led(state):
+    GPIO.output(SPEAKER_LED_PIN, GPIO.HIGH if state else GPIO.LOW)
+def set_rfid_led(state):
+    GPIO.output(RFID_LED_PIN, GPIO.HIGH if state else GPIO.LOW)
 
 def set_motor(speed, direction):
     """Set motor speed and direction."""
+    if speed > 0:
+        set_motor_led(True)
+    else:
+        set_motor_led(False)
+        
     pwm.ChangeDutyCycle(speed)
     GPIO.output(MOTOR_DIRECTION_PIN, direction)
     GPIO.output(MOTOR_INVERTED_PIN, not direction)
@@ -62,6 +93,7 @@ def set_motor(speed, direction):
 
 def display_both_lines_with_scroll(line1_message, line2_message, delay=0.1):
     """Display messages simultaneously on both rows of the LCD with scrolling."""
+    set_lcd_led(True)
     lcd.clear()
     max_chars = 16
     padded_line1 = " " * 8 + line1_message + " " * max_chars
@@ -79,12 +111,16 @@ def display_both_lines_with_scroll(line1_message, line2_message, delay=0.1):
     lcd.write_string(line1_message[:16])
     lcd.cursor_pos = (1, 0)
     lcd.write_string(line2_message[:16])
+    set_lcd_led(False)
 
-def get_track_name(uri):
+def get_track_name():
     """Retrieve track name from Spotify."""
     try:
-        track_info = sp.track(uri)
-        return track_info['name']
+        track_info = sp.current_playback()
+        if track_info:
+            track_name = track_info['item']['name']
+            print(track_name)
+            return track_name
     except Exception as e:
         print(f"Error retrieving track info: {e}")
         return "Unknown Track"
@@ -97,9 +133,11 @@ def check_playback_status():
         try:
             playback = sp.current_playback()
             if playback and playback.get('is_playing', False):
-                set_motor(50, True)  # Motor ON
+                set_motor(34, True)  # Motor ON
+                set_speaker_led(True)
             else:
                 set_motor(0, False)  # Motor OFF
+                set_speaker_led(False)
         except Exception as e:
             print(f"Error checking playback status: {e}")
         sleep(1)
@@ -120,6 +158,7 @@ def play_song_from_rfid():
     reader = SimpleMFRC522()
     try:
         while not stop_threads:
+            set_rfid_led(True)
             id, _ = reader.read()
 
             # Handle pause playback tag
@@ -131,7 +170,23 @@ def play_song_from_rfid():
                 except Exception as e:
                     print(f"Error pausing playback: {e}")
                 continue
-
+            if id == PLAY_PLAYBACK:
+                try:
+                    sp.start_playback(device_id=DEVICE_ID)  # Pause Spotify playback
+                    #set_motor(0, False)  # Stop the motor
+                    display_both_lines_with_scroll("Playback", "Resumed", delay=0.06)
+                except Exception as e:
+                    print(f"Error skipping track: {e}")
+                continue
+            if id == SKIP_PLAYBACK:
+                try:
+                    sp.next_track(device_id=DEVICE_ID)  # Pause Spotify playback
+                    sp.start_playback(device_id=DEVICE_ID)
+                    #set_motor(0, False)  # Stop the motor
+                    display_both_lines_with_scroll("Skipping", "Next Track", delay=0.06)
+                except Exception as e:
+                    print(f"Error resuming playback: {e}")
+                continue
             # Handle special RFID tag for registration
             if id == REGISTER_RFID_TAG:
                 display_both_lines_with_scroll("Registration", "Mode Active", delay=0.06)
@@ -139,9 +194,11 @@ def play_song_from_rfid():
                     id, _ = reader.read()
                     if id != REGISTER_RFID_TAG and id != PAUSE_PLAYBACK:
                         # Get the current playing URI from Spotify
-                        uri = sp.current_playback().get('item', {}).get('uri')
+                        uri = sp.current_playback()
                         if uri:
-                            register_tag(id, uri)
+                            album_uri = uri['item']['album']['uri']
+                            print(album_uri)
+                            register_tag(id, album_uri)
                         else:
                             display_both_lines_with_scroll("No Playback Found", "Start Spotify", delay=0.06)
                         break
@@ -152,8 +209,10 @@ def play_song_from_rfid():
             result = c.fetchone()
             if result:
                 uri = result[0]
-                sp.start_playback(device_id=DEVICE_ID, uris=[uri])
-                track_name = get_track_name(uri)
+                print(uri)
+                sp.start_playback(device_id=DEVICE_ID, context_uri=uri)
+                track_name = get_track_name()
+                print("track name ", track_name)
                 display_both_lines_with_scroll("Playing", track_name, delay=0.06 )
                 #sp.start_playback(device_id=DEVICE_ID, uris=[uri])
                 current_playing = uri
@@ -162,6 +221,7 @@ def play_song_from_rfid():
             sleep(1)
     finally:
         print("RFID thread exiting...")
+        set_rfid_led(False)
 
 def main():
     """Main thread to run the program."""
@@ -191,6 +251,10 @@ def main():
     finally:
         display_both_lines_with_scroll("Cleaning Up", "Goodbye!", delay=0.06)
         set_motor(0, False)
+        GPIO.output(LCD_LED_PIN, GPIO.LOW)
+        GPIO.output(MOTOR_LED_PIN, GPIO.LOW)
+        GPIO.output(RFID_LED_PIN, GPIO.LOW)
+        GPIO.output(SPEAKER_LED_PIN, GPIO.LOW)
         pwm.stop()
         GPIO.cleanup()
         conn.close()
