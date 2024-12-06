@@ -26,6 +26,7 @@ SPEAKER_LED_PIN = 6
 MOTOR_LED_PIN = 13
 RFID_LED_PIN = 19
 
+# GPIO Setup
 GPIO.setmode(GPIO.BCM)
 
 GPIO.setup(SPEAKER_LED_PIN, GPIO.OUT)
@@ -42,10 +43,10 @@ GPIO.setup(MOTOR_DIRECTION_PIN, GPIO.OUT)
 GPIO.setup(MOTOR_INVERTED_PIN, GPIO.OUT)
 GPIO.setup(PWM_PIN, GPIO.OUT)
 
-pwm = GPIO.PWM(PWM_PIN, 1000)
+pwm = GPIO.PWM(PWM_PIN, 1000)  # Motor PWM
 pwm.start(0)
 
-# Initialize Spotify client
+# Spotify Initialization
 sp = spotipy.Spotify(auth_manager=SpotifyOAuth(
     client_id=CLIENT_ID,
     client_secret=CLIENT_SECRET,
@@ -53,10 +54,10 @@ sp = spotipy.Spotify(auth_manager=SpotifyOAuth(
     scope="user-read-playback-state,user-modify-playback-state"
 ))
 
-# Initialize LCD
-lcd = CharLCD('PCF8574', 0x27)
+# LCD Initialization
+lcd = CharLCD('PCF8574', 0x27)  # Update I2C address if necessary
 
-# Setup SQLite database
+# SQLite Database
 conn = sqlite3.connect('rfid_spotify.db', check_same_thread=False)
 c = conn.cursor()
 c.execute('''
@@ -67,10 +68,12 @@ c.execute('''
           ''')
 conn.commit()
 
+# Global Variables
 stop_threads = False
 lcd_message_queue = queue.Queue()  # LCD message queue
 
 
+# LED Control Functions
 def set_lcd_led(state):
     GPIO.output(LCD_LED_PIN, GPIO.HIGH if state else GPIO.LOW)
 
@@ -87,6 +90,7 @@ def set_rfid_led(state):
     GPIO.output(RFID_LED_PIN, GPIO.HIGH if state else GPIO.LOW)
 
 
+# Motor Control
 def set_motor(speed, direction):
     if speed > 0:
         set_motor_led(True)
@@ -97,13 +101,13 @@ def set_motor(speed, direction):
     GPIO.output(MOTOR_INVERTED_PIN, not direction)
 
 
+# LCD Message Queue
 def display_message(line1, line2, duration=3):
-    """Add a message to the LCD message queue."""
     lcd_message_queue.put((line1, line2, duration))
 
 
 def process_lcd_messages():
-    """Continuously process messages for the LCD."""
+    """Process LCD messages, falling back to current song display."""
     current_uri = None
     while not stop_threads:
         try:
@@ -137,6 +141,36 @@ def process_lcd_messages():
             sleep(5)
 
 
+# Spotify Track Info
+def get_track_name():
+    try:
+        track_info = sp.current_playback()
+        if track_info:
+            return track_info['item']['name']
+    except Exception as e:
+        print(f"Error retrieving track info: {e}")
+    return "Unknown Track"
+
+
+# Playback Status
+def check_playback_status():
+    """Monitor Spotify playback and control motor."""
+    global stop_threads
+    while not stop_threads:
+        try:
+            playback = sp.current_playback()
+            if playback and playback.get('is_playing', False):
+                set_motor(34, True)
+                set_speaker_led(True)
+            else:
+                set_motor(0, False)
+                set_speaker_led(False)
+        except Exception as e:
+            print(f"Error checking playback status: {e}")
+        sleep(1)
+
+
+# Register RFID Tags
 def register_tag(tag_id, uri):
     try:
         c.execute("INSERT OR REPLACE INTO tag_to_uri (tag_id, uri) VALUES (?, ?)", (tag_id, uri))
@@ -147,6 +181,7 @@ def register_tag(tag_id, uri):
         display_message("Registration Failed", "Try Again", 5)
 
 
+# RFID Playback
 def play_song_from_rfid():
     global stop_threads
     reader = SimpleMFRC522()
@@ -173,7 +208,7 @@ def play_song_from_rfid():
                 display_message("Registration", "Mode Active", 5)
                 while True:
                     id, _ = reader.read()
-                    if id != REGISTER_RFID_TAG and id != PAUSE_PLAYBACK:
+                    if id != REGISTER_RFID_TAG:
                         uri = sp.current_playback()
                         if uri:
                             album_uri = uri['item']['album']['uri']
@@ -188,7 +223,7 @@ def play_song_from_rfid():
             if result:
                 uri = result[0]
                 sp.start_playback(device_id=DEVICE_ID, context_uri=uri)
-                track_name = sp.current_playback()['item']['name']
+                track_name = get_track_name()
                 display_message("Playing", track_name[:16], 5)
             else:
                 display_message("Tag Not Found", "Please Register", 5)
@@ -197,6 +232,7 @@ def play_song_from_rfid():
         set_rfid_led(False)
 
 
+# Main Program
 def main():
     global stop_threads
     try:
